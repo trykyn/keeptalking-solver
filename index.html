@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script>$.noConflict();</script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+  <title>Keep talking and nobody explodes</title>
+</head>
+
+<body ng-app="keepTalkingSolverApp" ng-controller="keepTalkingSolverController">
+  
+<header>
+  <nav>
+    <ul class="nav-list">
+      <li><a href="#general">General</a></li>
+      <li><a href="#wires">Wires</a></li>
+      <li><a href="#buttons">Buttons</a></li>
+      <li><a href="#keypads">Keypads</a></li>
+      <li><a href="#simonsays">Simon Says</a></li>
+      <li><a href="#memory">Memory</a></li>
+      <li><a href="#passwords">Passwords</a></li>
+      <li><a href="#morse">Morse</a></li>
+      <li><a href="#wire-sequences">Wire sequences</a></li>
+      <li><a href="#complicatedWires">Complicated Wires</a></li>
+      <li><a href="#" class="show-hide" data-what="#sec-knobs">Knobs</a></li>
+      <li><a href="#whosonfirst">Who's on First</a></li>
+      <li><a href="#maze">Mazes</a></li>
+    </ul>  
+  </nav>
+  <h1 class="page-title">Keep talking and nobody explodes</h1>
+</header>
+
+<div class="page-wrapper">
+
+<a class="nav-anchor" name="knobs"></a>
+<section id="sec-knobs">
+  <h2>Knobs <button class="btn-clr c-White" ng-click="knob.resetKnob()">Reset</button></h2>
+  
+  <div>
+    <div class="col">
+      <table class="knob-table">
+         <tr ng-repeat="ledrow in knob.ledrows track by $index">
+           <td ng-repeat="led in ledrow track by $index" class="knob-led-cell"
+               ng-click="led.IsClicked = !led.IsClicked;knob.clickKnob()" 
+               ng-class="{'knob-led-lit-cell': led.IsClicked}">
+             {{$index+1}}
+           </td>
+          </tr>
+      </table>
+    </div>
+    <div class="col hero">
+      {{knob.result}}   
+    </div>
+  </div>
+  
+  <p><a href="#" class="show-hide" data-what="#sec-knobs">Close</a></p>
+</section>
+
+<a class="nav-anchor" name="general"></a>
+<section>
+  <h2>Bomb Info</h2>
+  <div>
+    <form name="batteries-form">
+      <p>
+        Num Batteries: 
+        <input id="numbat0" type="radio" ng-model="numBatteries" value="0">
+        <label for="numbat0" class="defLabel">None</label>
+        <input id="numbat1" type="radio" ng-model="numBatteries" value="1">
+        <label for="numbat1" class="defLabel">1</label>
+        <input id="numbat2" type="radio" ng-model="numBatteries" value="2">
+        <label for="numbat2" class="defLabel">2</label>
+        <input id="numbat3" type="radio" ng-model="numBatteries" value="3">
+        <label for="numbat3" class="defLabel">3+</label>
+      </p>
+    </form>
+  </div>
+  <div>
+    <form name="serialnumber-form">
+      <p>
+        Serial Number:
+        <input id="serial-even" name="serialnum" type="radio" ng-model="serial.odd" ng-value="false">
+        <label for="serial-even" class="defLabel">Even (2,4,6,8,0)</label>
+        <input id="serial-odd" name="serialnum" type="radio" ng-model="serial.odd" ng-value="true">
+        <label for="serial-odd" class="defLabel">Odd (1,3,5,7,9)</label>
+      </p>
+      <p>
+        Serial Vowel (a,i,u,e,o):
+        <input id="serialvowel0" name="serialvowel" type="radio" ng-model="serial.vowel" ng-value="true">
+        <label for="serialvowel0" class="defLabel">Yes</label>
+        <input id="serialvowel1" name="serialvowel" type="radio" ng-model="serial.vowel" ng-value="false">
+        <label for="serialvowel1" class="defLabel">No</label>
+      </p>
+    </form>
+  </div>
+  <div>
+    <form name="indicator-form">
+      <p>
+        Indicator:
+        <input id="indicator-car" type="checkbox" ng-model="componentcar">
+        <label for="indicator-car" class="defLabel">CAR</label>
+        <input id="indicator-frk" type="checkbox" ng-model="componentfrk">
+        <label for="indicator-frk" class="defLabel">FRK</label>
+      </p>
+    </form>
+  </div>
+  <div>
+    <form name="components-form">
+      <p>
+        Components:
+        <input id="comp0" type="checkbox" ng-model="component.none">
+        <label for="comp0" class="defLabel">None</label>
+        <input id="comp1" type="checkbox" ng-model="component.parallel">
+        <label for="comp1" class="defLabel">Parallelport</label>
+        <!--<input id="comp2" type="checkbox" ng-model="component.dvdid">
+        <label for="comp2">DVI-D</label>
+        <input id="comp3" type="checkbox" ng-model="component.ps2">
+        <label for="comp3">PS/2</label>
+        <input id="comp4" type="checkbox" ng-model="component.rj45">
+        <label for="comp4">RJ-45</label>
+        <input id="comp5" type="checkbox" ng-model="component.seral">
+        <label for="comp5">Serial</label>
+        <input id="comp6" type="checkbox" ng-model="component.stereorca">
+        <label for="comp6">Stereo RCA</label> -->
+      </p>
+    </form>
+  </div>
+</section>
+
+<a class="nav-anchor" name="wires"></a>
+<section>
+  <h2>Wires <button class="btn-clr c-White" ng-click="resetWires()">Reset</button></h2>
+  
+  <div>
+    <div class="col">
+      <div class="button-row">
+        <button ng-click="addWire('Blue')"  class="btn-clr c-Blue">Blue</button>
+        <button ng-click="addWire('Black')" class="btn-clr c-Black">Black</button>
+        <button ng-click="addWire('White')" class="btn-clr c-White">White</button>
+      </div>
+      <div class="button-row">
+        <button ng-click="addWire('Red')"    class="btn-clr c-Red">Red</button>
+        <button ng-click="addWire('Yellow')" class="btn-clr c-Yellow">Yellow</button>
+        <button ng-click="addWire('Green')"  class="btn-clr c-Green">Green</button>
+      </div>
+    </div>
+    <div class="col">
+      <div ng-show="wireRequires=='OddSerial'">
+        <form name="serialnumber-form">
+          <p>
+            Serial Number:
+            <input id="w-serial-even" name="serialnum" type="radio" ng-model="serial.odd" ng-value="false">
+            <label for="w-serial-even" class="defLabel">Even (2,4,6,8,0)</label>
+            <input id="w-serial-odd" name="serialnum" type="radio" ng-model="serial.odd" ng-value="true">
+            <label for="w-serial-odd" class="defLabel">Odd (1,3,5,7,9)</label>
+          </p>
+        </form>
+      </div>
+      <div class="hero" ng-show="wireRequires=='Nothing'">
+        <div ng-if="selectedWires.length > 6"><strong>Too MANY</strong> wires!!!</div>  
+        <div ng-show="selectedWires.length <= 6 && cutWire">
+          Cut the <strong>{{cutWire}}</strong> wire
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-repeat="c in selectedWires track by $index"> 
+    <div class="c-{{c}}">{{c}}</div>
+  </div>
+</section>
+
+<a class="nav-anchor" name="buttons"></a>
+<section>
+  <h2>Button <button class="btn-clr c-White" ng-click="resetButton()">Reset</button></h2>
+  
+  <form name="button-form">
+  <div>
+    <div class="col">
+      <div class="button-row">
+        <input id="btnTxt0" name="btntxt" type="radio" ng-model="button.text" ng-change="updateButton()" value="abort">
+        <label for="btnTxt0" class="defLabel">Abort</label>
+        <input id="btnTxt1" name="btntxt" type="radio" ng-model="button.text" ng-change="updateButton()" value="detonate">
+        <label for="btnTxt1" class="defLabel">Detonate</label>
+        <input id="btnTxt2" name="btntxt" type="radio" ng-model="button.text" ng-change="updateButton()" value="hold">
+        <label for="btnTxt2" class="defLabel">Hold</label>
+        <input id="btnTxt3" name="btntxt" type="radio" ng-model="button.text" ng-change="updateButton()" value="other">
+        <label for="btnTxt3" class="defLabel">Other</label>
+        <hr>
+      </div>
+      <div class="button-row">
+        <input id="btnClr0" name="btnclr" type="radio" ng-model="button.color" ng-change="updateButton()" value="Blue">
+        <label for="btnClr0" class="clrLabel c-Blue">Blue</label>
+        <input id="btnClr1" name="btnclr" type="radio" ng-model="button.color" ng-change="updateButton()" value="Black">
+        <label for="btnClr1" class="clrLabel c-Black">Black</label>
+        <input id="btnClr2" name="btnclr" type="radio" ng-model="button.color" ng-change="updateButton()" value="White">
+        <label for="btnClr2" class="clrLabel c-White">White</label>
+      </div>
+      <div class="button-row">
+        <input id="btnClr3"  type="radio" ng-model="button.color" ng-change="updateButton()" value="Red">
+        <label for="btnClr3" class="clrLabel c-Red">Red</label>
+        <input id="btnClr4"  type="radio" ng-model="button.color" ng-change="updateButton()" value="Yellow">
+        <label for="btnClr4" class="clrLabel c-Yellow">Yellow</label>
+        <input id="btnClr5"  type="radio" ng-model="button.color" ng-change="updateButton()" value="Green">
+        <label for="btnClr5" class="clrLabel c-Green">Green</label>
+      </div>
+    </div>
+    <div class="col">
+      <div ng-show="buttonRequires == 'NumBatteries'" class="hero">
+        <p>
+          Num Batteries: 
+          <input id="btn-numbat0" type="radio" ng-model="numBatteries" value="0">
+          <label for="btn-numbat0" class="defLabel">None</label>
+          <input id="btn-numbat1" type="radio" ng-model="numBatteries" value="1">
+          <label for="btn-numbat1" class="defLabel">1</label>
+          <input id="btn-numbat2" type="radio" ng-model="numBatteries" value="2">
+          <label for="btn-numbat2" class="defLabel">2</label>
+          <input id="btn-numbat3" type="radio" ng-model="numBatteries" value="3">
+          <label for="btn-numbat3" class="defLabel">3+</label>
+        </p>
+      </div>
+      <div ng-show="buttonRequires == 'LabelFRK'" class="hero">
+          <p>
+            Indicator:
+            <input id="btn-componentfrk0" name="indicatorfrk" type="radio" ng-model="componentfrk" data-ng-value="true">
+            <label for="btn-componentfrk0" class="defLabel">FRK</label>
+            <input id="btn-componentfrk1" name="indicatorfrk" type="radio" ng-model="componentfrk" data-ng-value="false">
+            <label for="btn-componentfrk1" class="defLabel">---</label>
+          </p>
+      </div> 
+      <div ng-show="buttonRequires == 'LabelCAR'" class="hero">
+        <p>
+          Indicator:
+          <input id="btn-componentcar0" name="indicatorcar" type="radio" ng-model="componentcar" data-ng-value="true">
+          <label for="btn-componentcar0" class="defLabel">CAR</label>
+          <input id="btn-componentcar1" name="indicatorcar" type="radio" ng-model="componentcar" data-ng-value="false">
+          <label for="btn-componentcar1" class="defLabel">---</label>
+        </p>
+      </div>
+      <div ng-show="buttonRequires == 'Text'" class="hero">
+        Need button text
+      </div>
+      <div ng-show="buttonRequires == 'Color'" class="hero">
+        Need button color
+      </div>
+      <div ng-show="buttonRequires == 'Nothing'">
+        <div ng-show="buttonAction=='hold'">
+          <table><tr><td class="dist c-Blue">Blue</td><td class="hero dist">4</td></tr>
+          <tr><td class="dist c-Yellow">Yellow</td><td class="hero dist">5</td></tr>
+          <tr><td class="dist c-White">Otherwise</td><td class="hero dist">1</td></tr></table>
+        </div>
+        <div ng-show="buttonAction=='release'" class="hero">
+          Immediately release
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
+</section>
+
+<a class="nav-anchor" name="keypads"></a>
+<section>
+    <h2>Keypads<button class="btn-clr c-White"ng-click="resetKeypads()">Reset</button></h2>
+   <div class="float-wrap">
+      <div ng-repeat="keypad in keypads" > 
+         <img class="keypadimg" ng-class="{'selectedImg': keypad.isSelected, 'faded': keypad.isOpaque}"  ng-click="clickKeypad(keypad.alt)" ng-src="http://binarystudios.de/keeptalking/images/{{keypad.src}}" alt="{{keypad.alt}}" />
+      </div>
+   </div>
+   <div style="margin:50px">
+    <div class="float-wrapy">
+      <div ng-repeat="keypad in resultKeypads" > 
+         <img class="keypadimg" ng-click="clickKeypad(keypad.alt)" ng-src="http://binarystudios.de/keeptalking/images/{{keypad.src}}" alt="{{keypad.alt}}" />
+      </div>
+   </div>
+   </div>
+</section>
+
+<a class="nav-anchor" name="simonsays"></a>
+<section>
+  <h2>Simon says <button class="btn-clr c-White" ng-click="resetSimonSays()">Reset</button></h2>
+  <form name="simonSaysForm">
+    <p>
+      Strikes:
+      <input id="ss-strikes0" type="radio" name="ss-strikes" ng-model="numStrikes" value="0">
+      <label for="ss-strikes0" class="defLabel">None</label>
+      <input id="ss-strikes1" type="radio" name="ss-strikes" ng-model="numStrikes" value="1">
+      <label for="ss-strikes1" class="defLabel">1</label>
+      <input id="ss-strikes2" type="radio" name="ss-strikes" ng-model="numStrikes" value="2">
+      <label for="ss-strikes2" class="defLabel">2</label>
+    </p>
+    <div ng-show="serial.vowel === undefined">
+      Serial Vowel (a,i,u,e,o):
+      <input id="ss-serialvowel0" name="serialvowel" type="radio" ng-model="serial.vowel" ng-value="true">
+      <label for="ss-serialvowel0" class="defLabel">Yes</label>
+      <input id="ss-serialvowel1" name="serialvowel" type="radio" ng-model="serial.vowel" ng-value="false">
+      <label for="ss-serialvowel1" class="defLabel">No</label>
+    </div>
+    <div ng-show="serial.vowel !== undefined">
+      <div style="float:left;margin-right: 10px">
+        <p><strong>Add Flash:</strong></p>
+        <p>
+          <button ng-click="addSimonSays('Red')"  class="btn-clr c-Red">Red</button>
+          <button ng-click="addSimonSays('Blue')"  class="btn-clr c-Blue">Blue</button>
+          <button ng-click="addSimonSays('Green')" class="btn-clr c-Green">Green</button>
+          <button ng-click="addSimonSays('Yellow')" class="btn-clr c-Yellow">Yellow</button>
+        </p>
+      </div>
+      <div style="float:left">
+        <table class="prettyTable">
+        <thead><tr>
+          <th>#</th>
+          <th>Defuser says</th>
+          <th>Expert says</th>
+        </tr></thead>
+        <tbody>
+          <tr ng-repeat="s in simonSaysSequence track by $index">
+            <td>{{$index}}</td>
+            <td>{{s.defuser}}</td>
+            <td class="c-{{s.expert}}">{{s.expert}}</td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div style="clear:both"></div>
+    </div>
+  </form>
+</section>
+
+<a class="nav-anchor" name="memory"></a>
+<section>
+  <h2>Memory<button class="btn-clr c-White" ng-click="resetMemory()">Reset</button></h2>
+  <form name="memoryForm">
+    <table class="prettyTable highlightRows">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Display</th>
+          <th>Position</th>
+          <th>Label</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="ms in memoryStages track by $index">
+          <td>{{$index + 1}}</td>
+          <td>
+            <input id="mem-s{{$index}}-d1" name="ms{{$index}}d1" type="radio" ng-click="$parent.updateMemory()" ng-model="ms.display" value="1">
+            <label for="mem-s{{$index}}-d1" name="ms{{$index}}d1" class="defLabel">1</label>
+            <input id="mem-s{{$index}}-d2" name="ms{{$index}}d2" type="radio" ng-click="updateMemory()" ng-model="ms.display" value="2">
+            <label for="mem-s{{$index}}-d2" name="ms{{$index}}d2" class="defLabel">2</label>
+            <input id="mem-s{{$index}}-d3" name="ms{{$index}}d3" type="radio" ng-click="updateMemory()" ng-model="ms.display" value="3">
+            <label for="mem-s{{$index}}-d3" name="ms{{$index}}d3" class="defLabel">3</label>
+            <input id="mem-s{{$index}}-d4" name="ms{{$index}}d4" type="radio" ng-click="updateMemory()" ng-model="ms.display" value="4">
+            <label for="mem-s{{$index}}-d4" name="ms{{$index}}d4" class="defLabel">4</label>
+          </td>
+          <td>
+            <input id="mem-s{{$index}}-p1" name="ms{{$index}}p1" type="radio" ng-model="ms.position" value="1">
+            <label for="mem-s{{$index}}-p1" name="ms{{$index}}p1" class="defLabel">1</label>
+            <input id="mem-s{{$index}}-p2" name="ms{{$index}}p2" type="radio" ng-model="ms.position" value="2">
+            <label for="mem-s{{$index}}-p2" name="ms{{$index}}p2" class="defLabel">2</label>
+            <input id="mem-s{{$index}}-p3" name="ms{{$index}}p3" type="radio" ng-model="ms.position" value="3">
+            <label for="mem-s{{$index}}-p3" name="ms{{$index}}p3" class="defLabel">3</label>
+            <input id="mem-s{{$index}}-p4" name="ms{{$index}}p4" type="radio" ng-model="ms.position" value="4">
+            <label for="mem-s{{$index}}-p4" name="ms{{$index}}p4" class="defLabel">4</label>
+          </td>
+          <td>
+            <input id="mem-s{{$index}}-l1" name="ms{{$index}}l1" type="radio" ng-model="ms.label" value="1">
+            <label for="mem-s{{$index}}-l1" name="ms{{$index}}l1" class="defLabel">1</label>
+            <input id="mem-s{{$index}}-l2" name="ms{{$index}}l2" type="radio" ng-model="ms.label" value="2">
+            <label for="mem-s{{$index}}-l2" name="ms{{$index}}l2" class="defLabel">2</label>
+            <input id="mem-s{{$index}}-l3" name="ms{{$index}}l3" type="radio" ng-model="ms.label" value="3">
+            <label for="mem-s{{$index}}-l3" name="ms{{$index}}l3" class="defLabel">3</label>
+            <input id="mem-s{{$index}}-l4" name="ms{{$index}}l4" type="radio" ng-model="ms.label" value="4">
+            <label for="mem-s{{$index}}-l4" name="ms{{$index}}l4" class="defLabel">4</label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</section>
+
+<a class="nav-anchor" name="passwords"></a>
+<section>
+  <h2>Passwords<button class="btn-clr c-White" ng-click="resetPasswords()">Reset</button></h2>
+  <form name="passwordsForm">
+    <p>
+      <input type="text" class="pw-input" ng-change="getPasswords()" ng-model="passwordParts.part1" placeholder="part1">
+      <input type="text" class="pw-input" ng-change="getPasswords()" ng-model="passwordParts.part2" placeholder="part2">
+      <input type="text" class="pw-input" ng-change="getPasswords()" ng-model="passwordParts.part3" placeholder="part3">
+      <input type="text" class="pw-input" ng-change="getPasswords()" ng-model="passwordParts.part4" placeholder="part4">
+      <input type="text" class="pw-input" ng-change="getPasswords()" ng-model="passwordParts.part5" placeholder="part5">
+    </p>
+    <p>
+      <strong>Possibilities:</strong>
+      <span id="pw-result">
+        {{passwordPossibilities}}
+      </span>
+    </p>
+  </form>
+</section>
+
+<a class="nav-anchor" name="morse"></a>
+<section>
+  <h2>Morse-Code <button class="btn-clr c-White" ng-click="morseCodeReset()">Reset</button></h2>
+  <form id="form-morse">
+    <p>
+      <textarea class="morse-code" ng-trim="true" ng-change="convertMorse()" ng-model="morse.code" id="morse-in" placeholder="... .--.  .- -.-. -.-"></textarea>
+     
+    </p> 
+    <div>
+    <button ng-click="morse.code = morse.code + '-';convertMorse()" class="btn-clr">long</button>
+    <button ng-click="morse.code = morse.code + '.';convertMorse()" class="btn-clr">short</button>
+    <button ng-click="morse.code = morse.code + ' ';convertMorse()" class="btn-clr"> </button>
+    </div>
+    <p ng-show="morseResult">
+      <strong>Result:</strong> {{morseResult}}
+    </p>
+    
+    <table ng-show="orderedFrequencies">
+      <tr><th style="width:50px; margin:5px">Morse Distance</th><th style="width:50px">String Distance</th><th>Word</th><th>Morse</th><th>Frequency</th></tr>
+      <tr ng-repeat="element in orderedFrequencies" ng-class="{ 'goodRow': element.ismindist == true || element.ismindist2 == true, 'bestRow': element.ismindist == true && element.ismindist2 == true}"><td>{{element.dist2}}</td><td>{{element.dist}}</td><td>{{element.mF[0]}}</td><td>{{element.morse}}</td><td>{{element.mF[1]}}</td></tr>
+    </table>
+   
+  </form>
+</section>
+
+<a class="nav-anchor" name="wire-sequences"></a>
+<section>
+  <h2>Wire sequences<button class="btn-clr c-White" ng-click="resetWireSeq()">Reset</button></h2>
+  
+  <div>
+    <div class="col">
+      <div class="button-row">
+        <button ng-click="addWireToSeq('Red')"   class="btn-clr c-Red">Red</button>
+        <button ng-click="addWireToSeq('Blue')"  class="btn-clr c-Blue">Blue</button>
+        <button ng-click="addWireToSeq('Black')" class="btn-clr c-Black">Black</button>
+      </div>
+    </div>
+    <div class="col">
+      <div class="hero" ng-show="cutWireSeq">
+          Cut if <strong>{{cutWireSeq}}</strong>
+      </div>
+    </div>
+  </div>
+  <div ng-repeat="c in wireSequence track by $index"> 
+    <div class="c-{{c}}">{{c}}</div>
+  </div>
+</section>
+
+<a class="nav-anchor" name="complicatedWires"></a>
+<section>
+  <h2>Complicated Wires <button class="btn-clr c-White" ng-click="resetComplicatedWires()">Reset</button></h2>
+  
+  <form ng-submit="addComplicatedWire()">
+    <p>
+      <input id="cw-3" type="checkbox" ng-model="complicatedWire.nextWhite">
+      <label for="cw-3" class="clrLabel c-White">White</label>
+      <input id="cw-1" type="checkbox" ng-model="complicatedWire.nextRed">
+      <label for="cw-1" class="clrLabel c-Red">Red</label>
+      <input id="cw-2" type="checkbox" ng-model="complicatedWire.nextBlue">
+      <label for="cw-2" class="clrLabel c-Blue">Blue</label>
+      <input id="cw-4" type="checkbox" ng-model="complicatedWire.nextStar">
+      <label for="cw-4" class="clrLabel c-Yellow">Star</label>
+      <input id="cw-5" type="checkbox" ng-model="complicatedWire.nextLED">
+      <label for="cw-5" class="clrLabel c-Black">LED</label>
+    </p>
+    <p>
+      <input type="submit" class="btn-cwAdd c-Green" value="add">
+    </p>
+  </form>
+  <table class="prettyTable">
+    <thead>
+    <tr>
+      <th>#</th><th>White</th><th>Red</th><th>Blue</th><th>Star</th><th>LED</th><th>Cut</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="cw in complicatedWires track by $index">
+        <td class="c-Black">{{$index}}</td>
+        <td class="c-White">{{cw.white}}</td>
+        <td class="c-Red">{{cw.red}}</td>
+        <td class="c-Blue">{{cw.blue}}</td>
+        <td class="c-Yellow">{{cw.star}}</td>
+        <td class="c-Black">{{cw.led}}</td>
+        <td ng-show="cw.needBatteries || cw.needParallelPort || cw.needSerial">
+          <p>Need further Information:</p>
+          <form name="cwfor-{{$index}}">
+            <p ng-show="cw.needBatteries">
+              Batteries:
+              <input id="cw-{{$index}}-numbat0" type="radio" ng-model="$parent.numBatteries" value="0">
+              <label for="cw-{{$index}}-numbat0" class="defLabel">None</label>
+              <input id="cw-{{$index}}-numbat1" type="radio" ng-model="$parent.numBatteries" value="1">
+              <label for="cw-{{$index}}-numbat1" class="defLabel">1</label>
+              <input id="cw-{{$index}}-numbat2" type="radio" ng-model="$parent.numBatteries" value="2">
+              <label for="cw-{{$index}}-numbat2" class="defLabel">2</label>
+              <input id="cw-{{$index}}-numbat3" type="radio" ng-model="$parent.numBatteries" value="3">
+              <label for="cw-{{$index}}-numbat3" class="defLabel">3+</label>
+            </p>
+            <p ng-show="cw.needParallelPort">
+              ParallelPort:
+              <input id="cw-{{$index}}-comp-para-yes" name="cw-{{$index}}-comp-parallel" type="radio" ng-model="$parent.component.parallel" ng-value="true">
+              <label for="cw-{{$index}}-comp-para-yes" class="defLabel">Yes</label>
+              <input id="cw-{{$index}}-comp-para-no" name="cw-{{$index}}-comp-parallel" type="radio" ng-model="$parent.component.parallel" ng-value="false">
+              <label for="cw-{{$index}}-comp-para-no" class="defLabel">No</label>
+            </p>
+            <p ng-show="cw.needSerial">
+              Serial Number:
+              <input id="cw-{{$index}}-serial-even" name="cw-serial-even" type="radio" ng-model="$parent.serial.odd" ng-value="false">
+              <label for="cw-{{$index}}-serial-even" class="defLabel">Even (2,4,6,8,0)</label>
+              <input id="cw-{{$index}}-serial-odd" name="cw-serial-even" type="radio" ng-model="$parent.serial.odd" ng-value="true">
+              <label for="cw-{{$index}}-serial-odd" class="defLabel">Odd (1,3,5,7,9)</label>
+            </p>
+          </form>
+        </td>
+        <td ng-show="!cw.needBatteries && !cw.needParallelPort && !cw.needSerial" class="action">
+          {{cw.cut}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<a class="nav-anchor" name="whosonfirst"></a>
+<section>
+  <h2>Who's on first<button class="btn-clr c-White" ng-click="resetWhosOnFirst()">Reset</button></h2>
+  <form name="whosForm">
+  <div>
+    <div style="float:left; width: 40%; margin-right: 10px">
+      <h3>Step 1</h3>
+      <p>
+        <input type="text" ng-model="whosOnFirst.step1" ng-change="updateWhosOnFirstStep1()">
+      </p>
+      <div>
+        <table class="whosOnFirstTable"
+               ng-repeat="wof in whosOnFirstStep1Results track by $index">
+          <thead>
+          <tr><th colspan="2">{{wof.word}}</th></tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="r in [] | range:3 track by $index">
+            <td ng-repeat="c in [] | range:2 track by $index">
+                <div ng-show="$parent.$parent.wof.y == $parent.$index && $parent.$parent.wof.x == $index" class="wofEye">
+                  <div class="ball"></div>
+                </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="clear:both"></div>
+    </div>
+    <div style="float:left; width: 40%">
+      <h3>Step 2</h3>
+      <p>
+        <input type="text" ng-model="whosOnFirst.step2" ng-change="updateWhosOnFirstStep2()">
+      </p>
+      <table class="whosOnFirstTable" ng-repeat="wof in whosOnFirstStep2Results">
+      <thead>
+        <tr><th>{{wof.word}}</th></tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="r in wof.results track by $index">
+          <td>{{r}}</td>
+        </tr>
+      </tbody>
+      </table>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+  </form>
+</section>
+
+<a class="nav-anchor" name="maze"></a>
+<section>
+  <h2>Amazing Mazes<button class="btn-clr c-White" ng-click="resetMaze()">Reset</button></h2>
+  <table>
+    <tr>
+      <td colspan="2">
+        <p><strong>Do that:</strong> {{mazeInstruction}}</p>
+      </td>
+    </tr> 
+    <tr>
+      <td>
+        <table class="mazeTable">
+          <tr>
+            <td></td><td class="maze-index-top maze-wall-bottom"  ng-repeat="mazeRow in maze track by $index">{{$index+1}}</td>
+          </tr>
+          <tr ng-repeat="mazeRow in maze track by $index">
+            <td class="maze-index-left maze-wall-right">{{ $index + 1}}</td>
+            <td class="mazeCell" ng-repeat="mazeCell in mazeRow track by $index"
+                ng-class="getMazeCellClasses(mazeCell) + ($index == 5 ? ' maze-wall-right' : '') + ($parent.$index==5 ? ' maze-wall-bottom' : '')"
+                ng-click="mazeClicked($index, $parent.$index)">
+              <div class="cellMarker circle"></div>
+              <div class="cellMarker start"></div>
+              <div class="cellMarker end"></div>
+              <div class="cellMarker solution"></div>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td valign="top" rowspan="2" style="padding-left:40px">
+        <div style="float:left" ng-show="mazepath.length > 0">
+          <table class="prettyTable highlightRows">
+          <thead>
+            <tr>
+              <th>Step</th><th>X</th><th>Y</th><th>Read!</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="pos in mazepath track by $index">
+              <td>{{$index}}</td>
+              <td>{{pos.X + 1}}</td>
+              <td>{{pos.Y + 1}}</td>
+              <td><strong>{{pos.Direction}}</strong></td>
+            </tr>
+          </tbody>
+          </table>
+          <div style="clear:both"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top:10px">
+        <p>
+          <label class="inputLabel" for="mazeCirclePos">Circle:</label> <input id="mazeCirclePos" type="text" ng-model="maze.circlePos">
+        </p><p>
+          <label class="inputLabel" for="mazeStartPos">Start:</label> <input id="mazeStartPos" type="text" ng-model="maze.startPos">
+        </p><p>
+          <label class="inputLabel" for="mazeEndPos">End:</label> <input id="mazeEndPos" type="text" ng-model="maze.endPos">
+        </p>
+      </td>
+    </tr>
+  </table>
+</section>
+
+</div> <!-- .page-wrapper -->
+</body>
+</html>
